@@ -1,0 +1,86 @@
+#include<iostream>
+#include<stdlib.h>
+#include<string.h>
+using namespace std;
+
+class flight
+{
+    int m[10][10],n,i,j;
+    string v[20];
+    char ch;
+    public:
+        void getgraph();
+        void display_graph();
+
+};
+void flight:: getgraph()
+{
+    cout<<"Enter no of cities:"<<endl;
+    cin>>n;
+    for(int i=0;i<n;i++)
+    {
+        cout<<"Enter name of city"<<i+1<<endl;
+        cin>>v[i];
+    }
+
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            cout<<"is there relation bet "<<v[i]<<" and "<<v[j]<<"if yes press y otherwise n"<<endl;
+            cin>>ch;
+            if(ch=='y')
+            {
+                cout<<"Enter time required to travel from "<<v[j] <<"to "<<v[i]<<endl;
+                cin>>m[i][j];
+            }
+            else{
+                m[i][j]=0;
+            }
+
+        }
+    }
+}
+void flight:: display_graph()
+{
+    for(int j=0;j<n;j++){
+        cout<<"\t"<<v[j];
+    }
+    for(int i=0;i<n;i++)
+    {
+        cout<<"\n"<<v[i];
+        for(int j=0;j<n;j++)
+        {
+            cout<<"\t"<<m[i][j];
+        }
+        cout<<"\n";
+
+    }    
+}  
+int main()
+{
+    int ch;
+    flight ob;
+    do{
+        cout<<"1.Get graph \n2.Display Graph\n3.exit"<<endl;
+        cout<<"Enter choice:";
+        cin>>ch;
+        switch(ch)
+        {
+            case 1:
+                ob.getgraph();
+                break;
+
+            case 2:
+                ob.display_graph();
+                break;
+
+            case 3:
+                break;
+
+            default:
+                cout<<"Invalid choice";
+        }
+    }while(ch!=3);
+    return 0;
+}               

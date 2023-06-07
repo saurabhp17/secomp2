@@ -1,0 +1,65 @@
+#include<iostream>
+
+#define max 100
+using namespace std;
+class mar {
+  public: int arr[max],
+  n,
+  left,
+  right,
+  largest,
+  temp,
+  z;
+  void create();
+  void hfy(int);
+
+};
+
+void mar::hfy(int i) {
+  left = 2 * i + 1;
+  right = 2 * i + 2;
+  largest = i;
+
+  if (left < n && arr[left] > arr[largest])
+    largest = left;
+
+  if (right < n && arr[right] > arr[largest])
+    largest = right;
+
+  if (i != largest) {
+    temp = arr[i];
+    arr[i] = arr[largest];
+    arr[largest] = temp;
+    hfy(largest);
+  }
+}
+
+void mar::create() {
+  cout << "Enter total no of students:=";
+  cin >> n;
+  for (int i = 0; i < n; i++) {
+    cout << "Enter marks of student" << i + 1 << ":=" << endl;
+    cin >> arr[i];
+  }
+  for (int i = (n - 1) / 2; i >= 0; i--) {
+    hfy(i);
+  }
+  z = n;
+  for (int i = (n - 1); i >= 0; i--) {
+    temp = arr[i];
+    arr[i] = arr[0];
+    arr[0] = temp;
+    n--;
+    hfy(0);
+
+  }
+  cout << "Minimum marks of student is:";
+  cout << arr[0] << endl;
+  cout << "Maximum marks of student is:";
+  cout << arr[z - 1] << endl;
+}
+int main() {
+  mar ab;
+  ab.create();
+  return 0;
+}

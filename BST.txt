@@ -1,0 +1,212 @@
+#include <iostream>
+
+#define GLOBALSPACE 10
+using namespace std;
+struct node {
+  struct node * left;
+  int data;
+  struct node * right;
+};
+class BST {
+  public: struct node * root;
+  struct node * createNode();
+  void insert(node * );
+  int minElement();
+  void mirror(node * );
+  void inorder(node * );
+  void preorder(node * );
+  void postorder(node * );
+  int height(node * ); // height means the no of nodes in longest path
+  int search(node * , int);
+  BST() {
+    root = NULL;
+  }
+};
+struct node * BST::createNode() {
+  struct node * nn = NULL;
+  nn = new node;
+  int element;
+  cout << "\nEnter the element --> ";
+  cin >> element;
+  nn -> data = element;
+  nn -> left = nn -> right = NULL;
+  return nn;
+}
+void BST::insert(node * newnode) {
+  if (root == NULL) {
+    root = newnode;
+    cout << "\nValue inserted as a ROOT node !";
+  } else {
+    struct node * temp = root;
+    while (1) {
+      if (newnode -> data == temp -> data) {
+        cout << "\nValue already inserted !";
+        return;
+      } else if (newnode -> data < temp -> data) {
+        if (temp -> left != NULL) {
+          temp = temp -> left;
+        } else {
+          temp -> left = newnode;
+          break;
+        }
+      } else {
+        if (temp -> right != NULL) {
+          temp = temp -> right;
+        } else {
+          temp -> right = newnode;
+          break;
+        }
+      }
+    }
+  }
+}
+int BST::minElement() {
+  if (root == NULL) {
+    cout << "\nTree is empty!";
+  } else {
+    struct node * temp = root;
+    while (temp -> left != NULL) // minimum element in BST is extreme left node
+    {
+      temp = temp -> left;
+    }
+    return temp -> data;
+  }
+}
+void BST::mirror(node * r) {
+  if (r == NULL) {
+    return;
+  } else {
+    node * temp;
+    temp = r -> left;
+    r -> left = r -> right;
+    r -> right = temp;
+    mirror(r -> left);
+    mirror(r -> right);
+  }
+}
+void BST::preorder(node * r) {
+  if (r == NULL)
+    return;
+  cout << r -> data << "\t";
+  preorder(r -> left);
+  preorder(r -> right);
+}
+void BST::inorder(node * r) {
+  if (r == NULL)
+    return;
+  inorder(r -> left);
+  cout << r -> data << "\t";
+  inorder(r -> right);
+}
+void BST::postorder(node * r) {
+  if (r == NULL)
+    return;
+  postorder(r -> left);
+  postorder(r -> right);
+  cout << r -> data << "\t";
+}
+int BST::height(node * r) {
+  // height of tree is == max(height of left subtree , height of right subtree)
+  if (r == NULL)
+    return -1;
+  else {
+    int lheight = height(r -> left);
+    int rheight = height(r -> right);
+    if (lheight > rheight) {
+      return (lheight + 1);
+    } else
+      return (rheight + 1);
+  }
+}
+int BST::search(node * temp, int key) {
+  /* temp points to root */
+  while (temp != NULL) {
+    if (key == temp -> data) {
+      cout << "\nKey found !";
+      return 1;
+    }
+    if (key < temp -> data)
+      temp = temp -> left;
+    else // key > temp->data
+      temp = temp -> right;
+  }
+  return -1;
+}
+void printTree2D(node * r, int space) {
+  if (r == NULL)
+    return;
+  space = space + GLOBALSPACE; // increase distance between levels
+  printTree2D(r -> right, space);
+  cout << endl;
+  for (int i = GLOBALSPACE; i < space; i++) {
+    cout << " ";
+  }
+  cout << r -> data << "\n";
+  printTree2D(r -> left, space);
+}
+int main() {
+  BST obj;
+  int choice;
+  do {
+    cout << "\n1. Insert element" << endl;
+    cout << "2. Minimum value " << endl;
+    cout << "3. Mirror of a tree " << endl;
+    cout << "4. Preorder traversal" << endl;
+    cout << "5. Inorder traversal" << endl;
+    cout << "6. Postrder traversal" << endl;
+    cout << "7. No of nodes in longest path " << endl;
+    cout << "8. search " << endl;
+    cout << "9. Display Tree " << endl;
+    cout << "0. Exit" << endl;
+    cout << "\nEnter your choice : ";
+    cin >> choice;
+    switch (choice) {
+    case 1:
+      struct node * newnode;
+      newnode = obj.createNode();
+      obj.insert(newnode);
+      break;
+    case 2:
+      int min;
+      min = obj.minElement();
+      cout << "\nMinimum node in tree is --> " << min;
+      break;
+    case 3:
+      obj.mirror(obj.root);
+      break;
+    case 4:
+      cout << "\n\t\tPREORDER TRAVERSAL \n\t ";
+      obj.preorder(obj.root);
+      cout << endl;
+      break;
+    case 5:
+      cout << "\n\t\tINORDER TRAVERSAL \n\t";
+      obj.inorder(obj.root);
+      cout << endl;
+      break;
+    case 6:
+      cout << "\n\t\tPOSTORDER TRAVERSAL \n\t";
+      obj.postorder(obj.root);
+      cout << endl;
+      break;
+    case 7:
+      int l;
+      l = obj.height(obj.root);
+      cout << "\nNo of nodes in logest path --> " << l + 1;
+      break;
+    case 8:
+      int x, a;
+      cout << "\nEnter the element you want to search :";
+      cin >> x;
+      a = obj.search(obj.root, x);
+      if (a == -1) {
+        cout << "\nKey not found!";
+      }
+      break;
+    case 9:
+      printTree2D(obj.root, 5);
+      break;
+    }
+  } while (choice != 0);
+  return 0;
+}

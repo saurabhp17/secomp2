@@ -1,0 +1,144 @@
+#include <iostream>
+
+#include <string.h>
+
+#define MAX 20
+using namespace std;
+struct node {
+  char data;
+  node * left;
+  node * right;
+};
+class cStack {
+  node * stk[MAX];
+  int top;
+  public:
+    cStack() {
+      top = -1;
+    }
+  void push(node * );
+  node * pop();
+  int isFull();
+  int isEmpty();
+};
+int cStack::isFull() {
+  return (top == MAX - 1 ? 1 : 0);
+}
+int cStack::isEmpty() {
+  return (top == -1 ? 1 : 0);
+}
+void cStack::push(node * newnode) {
+  if (isFull())
+    cout << "\nstack is full!";
+  else {
+    stk[++top] = newnode;
+  }
+}
+node * cStack::pop() {
+  if (isEmpty())
+    cout << "\nStack is empty!";
+  else {
+    return (stk[top--]);
+  }
+}
+class Tree {
+  char expr[MAX];
+  public:
+    struct node * root;
+  Tree() {
+    root = NULL;
+    cout << "\nEnter the expression --> ";
+    cin >> expr;
+  }
+  void createTree();
+  void Postorder();
+  void deleteTree(node * );
+};
+node * createNode() {
+  struct node * tempnode = NULL;
+  tempnode = new node;
+  tempnode -> left = tempnode -> right = NULL;
+  tempnode -> data = '\0';
+  return tempnode;
+}
+void Tree::createTree() {
+  cStack s;
+  int len = strlen(expr);
+  struct node * nn, * tmp1, * tmp2;
+  for (int i = len - 1; i >= 0; i--) {
+    nn = createNode();
+    if (isalpha(expr[i])) {
+      nn -> data = expr[i];
+      s.push(nn);
+    } else if (expr[i] == '+' || expr[i] == '-' || expr[i] == '/' || expr[i] == '*') {
+      nn -> data = expr[i];
+      tmp1 = s.pop();
+      tmp2 = s.pop();
+      nn -> left = tmp1;
+      nn -> right = tmp2;
+      s.push(nn);
+    }
+  }
+  root = s.pop(); // final expression
+}
+void Tree::Postorder() {
+  node * temp;
+  cStack s1, s2;
+  if (root == NULL)
+    return;
+  s1.push(root);
+  while (!s1.isEmpty()) {
+    temp = s1.pop();
+    s2.push(temp);
+    if (temp -> left != NULL) {
+      s1.push(temp -> left);
+    }
+    if (temp -> right != NULL) {
+      s1.push(temp -> right);
+    }
+  }
+  cout << "\n\t\t POSTORDER TRAVERSAL ";
+  while (!s2.isEmpty()) {
+    temp = s2.pop();
+    cout << "\t" << temp -> data;
+  }
+}
+void Tree::deleteTree(node * r) {
+  if (r == NULL)
+    return;
+  deleteTree(r -> left);
+  deleteTree(r -> right);
+  delete(r);
+}
+int main() {
+  Tree obj;
+  int choice;
+  do {
+    cout << "\n1. Create expression tree " << endl;
+    cout << "2. Postorder traversal" << endl;
+    cout << "3. Delete expression tree " << endl;
+    cout << "0. Exit " << endl;
+    cout << "Enter your choice : ";
+    cin >> choice;
+    switch (choice) {
+    case 1:
+      obj.createTree();
+      cout << "\nExpression tree is created !";
+      break;
+    case 2:
+      if (obj.root == NULL) {
+        cout << "\nTree is empty!";
+        break;
+      } else {
+        obj.Postorder();
+        break;
+      }
+    case 3:
+      obj.deleteTree(obj.root);
+      cout << "\nTree is Deleted !";
+      obj.root = NULL;
+      break;
+    }
+  } while (choice != 0);
+  return 0;
+}

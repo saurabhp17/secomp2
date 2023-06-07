@@ -1,0 +1,163 @@
+#include <iostream>
+
+#include <string.h>
+
+using namespace std;
+struct Dict {
+  int roll; // key
+  char name[10]; // value
+};
+class HashFunction {
+  struct Dict hashTable[10];
+  public:
+    HashFunction();
+  void insert();
+  void display();
+  int find(int);
+  void Delete(int);
+};
+HashFunction::HashFunction() {
+  for (int i = 0; i < 10; i++) {
+    hashTable[i].roll = -1;
+    strcpy(hashTable[i].name, "NULL");
+  }
+}
+void HashFunction::insert() {
+  char n[10], tempName[10];
+  int rn, temprn;
+  int hashIndex, flag = 0, count = 0;
+  char ans;
+  do {
+    if (count >= 10) {
+      cout << "\nHashtable is full !";
+      break;
+    }
+    cout << "\nEnter roll no --> ";
+    cin >> rn;
+    cout << "\nEnter name --> ";
+    cin >> n;
+    hashIndex = rn % 10;
+    // If bucket is empty at calculated hash index then insert directly
+    if (hashTable[hashIndex].roll == -1) {
+      hashTable[hashIndex].roll = rn;
+      strcpy(hashTable[hashIndex].name, n);
+    } else {
+      /* as we are using chaining with replacement , if collision occurs
+ we need to check whether key at that index is at its correct position
+or not
+ if it is at correct position then find next empty slot for new key
+ else replace the existing key with new key and find next free slot for
+existing key */
+      if (hashTable[hashIndex].roll % 10 != hashIndex) // if existing key is not at its correct position 
+      {
+          // copy in temp
+          strcpy(tempName, hashTable[hashIndex].name);
+          temprn = hashTable[hashIndex].roll;
+          // replace existing key with new key
+          strcpy(hashTable[hashIndex].name, n);
+          hashTable[hashIndex].roll = rn;
+          // find the next empty slot for existing key that is copied in temp
+          for (int i = hashIndex + 1; i < 10; i++) {
+            if (hashTable[i].roll == -1) {
+              strcpy(hashTable[i].name, tempName);
+              hashTable[i].roll = temprn;
+              flag = 1;
+              break;
+            }
+          }
+          // in case if we do not found empty locn from hashIndex to 9
+          // we have to search from 0 to hashIndex
+          for (int i = 0; i < hashIndex && flag == 0; i++) {
+            if (hashTable[i].roll == -1) {
+              strcpy(hashTable[i].name, tempName);
+              hashTable[i].roll = temprn;
+              break;
+            }
+          }
+        }
+      else // if existing key is at its correct position
+      {
+        // then find next empty slot for new key
+        for (int i = hashIndex + 1; i < 10; i++) {
+          if (hashTable[i].roll == -1) {
+            strcpy(hashTable[i].name, n);
+            hashTable[i].roll = rn;
+            flag = 1;
+            break;
+          }
+        }
+        // in case if we do not found empty locn from hashIndex + 1 to 9
+        // we have to search from 0 to hashIndex
+        for (int i = 0; i < hashIndex && flag == 0; i++) {
+          if (hashTable[i].roll == -1) {
+            strcpy(hashTable[i].name, n);
+            hashTable[i].roll = rn;
+            break;
+          }
+        }
+      }
+    }
+    flag = 0;
+    count++;
+    cout << "\nDo you want insert more keys(y/n)";
+    cin >> ans;
+  } while (ans == 'y');
+}
+int HashFunction::find(int k) {
+  for (int i = 0; i < 10; i++) {
+    if (hashTable[i].roll == k) {
+      cout << "\n\t" << hashTable[i].roll << " is found at " << i << " location with name " << hashTable[i].name;
+      return i;
+    }
+  }
+  return -1;
+}
+void HashFunction::Delete(int k) {
+  int index = find(k);
+  if (index == -1) {
+    cout << "\nKey not found!";
+  } else {
+    hashTable[index].roll = -1;
+    strcpy(hashTable[index].name, "NULL");
+    cout << "\nKey is deleted !";
+  }
+}
+void HashFunction::display() {
+  cout << "\n\t\t\t\tKEY\t\tNAME";
+  for (int i = 0; i < 10; i++) {
+    cout << "\n\thashTable[" << i << "]--> \t" << hashTable[i].roll << "\t\t" <<
+      hashTable[i].name;
+  }
+}
+int main() {
+  int k;
+  HashFunction obj;
+  int choice, index;
+  do {
+    cout << "\n\n\n\t***** Telephone(ADT) *****";
+    cout << "\n\t1.Insert \n\t2.Display \n\t3.Search \n\t4.Delete \n\t0.Exit";
+    cout << "\n\tEnter your choice --> ";
+    cin >> choice;
+    switch (choice) {
+    case 1:
+      obj.insert();
+      break;
+    case 2:
+      obj.display();
+      break;
+    case 3:
+      cout << "\nEnter key to be searched --> ";
+      cin >> k;
+      index = obj.find(k);
+      if (index == -1) {
+        cout << "\nKey not found";
+      }
+      break;
+    case 4:
+      cout << "\nEnter key to be deleted --> ";
+      cin >> k;
+      obj.Delete(k);
+      break;
+    }
+  } while (choice != 0);
+}

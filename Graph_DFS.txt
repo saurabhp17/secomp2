@@ -1,0 +1,106 @@
+#include <iostream>
+#include<stack>
+using namespace std;
+class Graph {
+  int adj_matrix[10][10];
+
+  public:
+  int visited[10];
+  int n;
+  Graph() {
+    for (int i = 0; i < 10; i++) {
+      visited[i] = 0;
+    }
+    cout << "\nEnter the no of vertices :";
+    cin >> n;
+  }
+  void Read_adjMatrix();
+  void DFS(int);
+  void DFS_nonRecursive(int);
+};
+void Graph::Read_adjMatrix() {
+  cout << "\nEnter the adjacency matrix --> ";
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      cout << "\nadj[" << i << "]" << "[" << j << "] :";
+      cin >> adj_matrix[i][j];
+    }
+  }
+}
+void Graph::DFS(int i) {
+  int j;
+  cout << i << "\t"; // print current node
+  visited[i] = 1; // mark it as visited
+  // check for its adjacent nodes
+  for (j = 0; j < n; j++) {
+    // if vertex j is adjacent to i and it is not visited call the function recursively
+    if (adj_matrix[i][j] == 1 && !visited[j]) {
+      DFS(j);
+    }
+  }
+}
+/* ******* NON RECURSIVE DFS using stack *******
+1. push source node into stack
+2.while stack is not empty
+ do
+ pop a vertex , current
+ if current has not been visited
+ * mark it as visited
+ * print it
+ for each neighbour of current
+ * if neighbour has not been visited,push it onto the stack
+3.repeat above step until stack is empty
+*/
+void Graph::DFS_nonRecursive(int i) {
+  stack < int > stk;
+  stk.push(i); // push source node
+  while (!stk.empty()) {
+    int current = stk.top();
+    stk.pop();
+    if (!visited[current]) {
+      cout << "\t" << current;
+      visited[current] = 1;
+    }
+
+    // push adjacent vertices into stack
+    for (int j = 0; j < n; j++) {
+      if (adj_matrix[current][j] == 1 && !visited[j]) {
+        stk.push(j);
+      }
+    }
+  }
+}
+int main() {
+  Graph obj;
+  int choice;
+  do {
+    cout << "\n1. Read the adjacency matrix ";
+    cout << "\n2. Depth First search(recursive) ";
+    cout << "\n3. Depth First search(non-recursive) ";
+    cout << "\n0. Exit ";
+    cout << "\n Enter your choice : ";
+    cin >> choice;
+    switch (choice) {
+    case 1:
+      obj.Read_adjMatrix();
+      break;
+    case 2:
+      for (int i = 0; i < obj.n; i++) {
+        obj.visited[i] = 0;
+      }
+      cout << "\n *** DFS TRAVERSAL (Recursive) *** ";
+      // call function for root node
+      obj.DFS(0);
+      break;
+    case 3:
+      for (int i = 0; i < obj.n; i++) {
+        obj.visited[i] = 0;
+      }
+      cout << "\n *** DFS TRAVERSAL (Non Recursive) *** ";
+      // call function for root node
+      obj.DFS_nonRecursive(0);
+      break;
+    }
+  } while (choice != 0);
+  return 0;
+}

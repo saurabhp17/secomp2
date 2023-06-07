@@ -1,0 +1,126 @@
+#include<iostream>
+
+using namespace std;
+struct node {
+  long long tele_No;
+  node * next;
+}* HashTable[10];
+class cHashing {
+  public: cHashing() {
+    for (int i = 0; i < 10; i++) {
+      HashTable[i] = NULL; // initializing hash table to NULL
+    }
+  }
+  int HashFun(long long);
+  node * create_node(long long); // To create a node when collision ocuurs
+  void display();
+  void search(long long);
+  void Delete(long long);
+  void insert(long long);
+};
+int cHashing::HashFun(long long key) {
+  return key % 10; // returning index at which key to be stored
+}
+node * cHashing::create_node(long long key) {
+  struct node * nn = new node;
+  nn -> next = NULL;
+  nn -> tele_No = key;
+  return nn;
+}
+void cHashing::display() {
+  for (int i = 0; i < 10; i++) {
+    node * temp;
+    temp = HashTable[i];
+    cout << "HashTable[" << i << "]";
+    while (temp != NULL) {
+      cout << "-> " << temp -> tele_No;
+      temp = temp -> next;
+    }
+    cout << "\n";
+  }
+}
+void cHashing::search(long long key) {
+  int flag = 0;
+  int index = HashFun(key);
+  node * point = HashTable[index]; // to point to the calculated index in hashtable
+  while (point != NULL) {
+    if (point -> tele_No == key) {
+      cout << "\nElement found at :";
+      cout << index << " : " << point -> tele_No << endl;
+      flag = 1;
+    }
+    point = point -> next; // if there is collision then to traverse for that index
+  }
+  if (flag == 0) {
+    cout << "\nNot found!";
+  }
+}
+void cHashing::Delete(long long key) {
+  int index = HashFun(key);
+  node * point = HashTable[index];
+  if (point == NULL) {
+    cout << "\nNot found !";
+    return;
+  }
+  if (point -> tele_No == key) // if matches to first node of that index
+  {
+    HashTable[index] = point -> next; // for eg . if at index 8 we have
+    return; // 28->18->38 and we want to delete 18 then 28 -> next should point to 38
+  }
+  // if there is collision at that index then we have to traverse
+  while ((point -> next) -> tele_No != key) {
+    point = point -> next;
+  }
+  // point will point to previous node of node to be searched
+  point -> next = point -> next -> next;
+}
+void cHashing::insert(long long key) {
+  int index = HashFun(key);
+  node * temp = new node;
+  node * nn = new node;
+  nn = create_node(key); // head will contain the key
+  temp = HashTable[index]; // getting hashtable value at calculated index in temp
+  if (temp == NULL) // if nothing at that index
+  {
+    HashTable[index] = nn;
+  } else // if collision
+  {
+    while (temp -> next != NULL) {
+      temp = temp -> next;
+    }
+    temp -> next = nn;
+  }
+}
+int main() {
+  cHashing obj;
+  int choice;
+  do {
+    cout << "\n1.Insert \n2.Display \n3.Delete \n4.Search \n0.Exit";
+    cout << "\nEnter your choice ";
+    cin >> choice;
+    switch (choice) {
+    case 1:
+      long long ins;
+      cout << "\nEnter Telephone no to be inserted :";
+      cin >> ins;
+      obj.insert(ins);
+      break;
+    case 2:
+      obj.display();
+      break;
+    case 3:
+      long long del;
+      cout << "\nEnter Telephone no to be deleted :";
+      cin >> del;
+      obj.Delete(del);
+      break;
+    case 4:
+      long long find;
+      cout << "\nEnter Telephone no to be searched :";
+      cin >> find;
+      obj.search(find);
+      break;
+    }
+  } while (choice != 0);
+  return 0;
+}

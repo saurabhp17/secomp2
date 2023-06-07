@@ -1,0 +1,120 @@
+#include <iostream>
+#include<stack>
+using namespace std;
+// struct for creating adjacency list
+struct node {
+  int vertex;
+  node * next;
+};
+class Graph {
+  int adj_matrix[10][10];
+  node * adj_list[10];
+
+  public:
+  int visited[10];
+  int n;
+  Graph() {
+    for (int i = 0; i < 10; i++) {
+      visited[i] = 0;
+      adj_list[i] = NULL;
+    }
+    cout << "\nEnter the no of vertices :";
+    cin >> n;
+  }
+  void Read_adjMatrix();
+  void create_adjList();
+  void BFS();
+};
+void Graph::Read_adjMatrix() {
+  cout << "\nEnter the adjacency matrix --> ";
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      cout << "\nadj[" << i << "]" << "[" << j << "] :";
+      cin >> adj_matrix[i][j];
+    }
+  }
+}
+
+// create adjacency list from adjacency matrix
+void Graph::create_adjList() {
+  struct node * nn, * temp;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (adj_matrix[i][j] == 1) // if there is edge between i and j
+      { // create node and add it to list
+        nn = new node;
+        nn -> vertex = j;
+        nn -> next = NULL;
+
+        if (adj_list[i] == NULL) {
+          adj_list[i] = nn;
+        } else {
+          temp = adj_list[i];
+          while (temp -> next != NULL) {
+            temp = temp -> next;
+          }
+          temp -> next = nn;
+        }
+      }
+    }
+  }
+}
+// BFS using adjacency list
+/*
+ 1. enqueue the source node
+ 2. Mark source node as visited
+ 3.while Queue is not empty
+ do
+ * dequeue node from queue
+ * print node
+ * enqueue all unvisited and adjacent nodes
+ 4. Repeat until queue becomes empty
+*/
+void Graph::BFS() {
+  node * temp = NULL;
+  int queue[10];
+  int front = 0, rear = 0;
+  for (int i = 0; i < n; i++) {
+    visited[i] = 0;
+  }
+  // enqueue source node
+  queue[rear++] = 0;
+  // mark it as visited
+  visited[0] = 1;
+  // while queue is not empty
+  while (front != rear) {
+    // dequeue and print
+    int currentNode = queue[front++];
+    cout << currentNode << "\t";
+    // get all adjacent vertices of currentNode from adj_list and enqueue
+    temp = adj_list[currentNode];
+    while (temp != NULL) {
+      if (!visited[temp -> vertex]) {
+        queue[rear++] = temp -> vertex;
+        visited[temp -> vertex] = 1;
+      }
+      temp = temp -> next;
+    }
+  }
+}
+int main() {
+  Graph obj;
+  int choice;
+  do {
+    cout << "\n1. Read the adjacency matrix ";
+    cout << "\n2. Breadth First search ";
+    cout << "\n0. Exit ";
+    cout << "\n Enter your choice : ";
+    cin >> choice;
+    switch (choice) {
+    case 1:
+      obj.Read_adjMatrix();
+      break;
+    case 2:
+      cout << "\n *** BFS TRAVERSAL *** ";
+      obj.create_adjList();
+      obj.BFS();
+    }
+  } while (choice != 0);
+  return 0;
+}
